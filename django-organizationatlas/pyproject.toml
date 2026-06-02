@@ -35,6 +35,9 @@ dependencies = [
   "python-organizationatlas>=0.1.0",
   "django-providerkit>=0.1.0",
   "django-virtualqueryset>=0.1.0",
+  "django-geoaddress>=1.0.2",
+  "django-namedid>=0.2.3",
+  "django-boosted>=1.0.1",
 ]
 
 [project.urls]
