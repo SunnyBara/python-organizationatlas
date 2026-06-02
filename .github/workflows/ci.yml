@@ -16,24 +16,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package_name: ["geoaddress", "django-geoaddress"]
+        package_name: ["organizationatlas", "django-organizationatlas"]
         python_version: ["3.10", "3.11", "3.12"]
         django_version: ["", "5.0.*", "5.1.*", "5.2.*"]
         exclude:
-          - package_name: geoaddress
+          - package_name: organizationatlas
             django_version: "5.0.*"
-          - package_name: geoaddress
+          - package_name: organizationatlas
             django_version: "5.1.*"
-          - package_name: geoaddress
+          - package_name: organizationatlas
             django_version: "5.2.*"
-          - package_name: django-geoaddress
+          - package_name: django-organizationatlas
             django_version: ""
         include:
-          - package_name: geoaddress
-            working_directory: python-geoaddress
+          - package_name: organizationatlas
+            working_directory: python-organizationatlas
             test_command: python -m pytest
-          - package_name: django-geoaddress
-            working_directory: django-geoaddress
+          - package_name: django-organizationatlas
+            working_directory: django-organizationatlas
             test_command: python manage.py test
 
     steps:
@@ -51,18 +51,18 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[test]"
 
-      - name: Install local geoaddress
-        if: ${{ matrix.package_name == 'django-geoaddress' }}
+      - name: Install local organizationatlas
+        if: ${{ matrix.package_name == 'django-organizationatlas' }}
         working-directory: ${{ matrix.working_directory }}
-        run: python -m pip install -e ../python-geoaddress
+        run: python -m pip install -e ../python-organizationatlas
 
       - name: Install Django
-        if: ${{ matrix.package_name == 'django-geoaddress' }}
+        if: ${{ matrix.package_name == 'django-organizationatlas' }}
         working-directory: ${{ matrix.working_directory }}
         run: python -m pip install "Django==${{ matrix.django_version }}"
 
       - name: Django system check
-        if: ${{ matrix.package_name == 'django-geoaddress' }}
+        if: ${{ matrix.package_name == 'django-organizationatlas' }}
         working-directory: ${{ matrix.working_directory }}
         run: python manage.py check
 
@@ -80,10 +80,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - package_name: geoaddress
-            working_directory: python-geoaddress
-          - package_name: django-geoaddress
-            working_directory: django-geoaddress
+          - package_name: organizationatlas
+            working_directory: python-organizationatlas
+          - package_name: django-organizationatlas
+            working_directory: django-organizationatlas
 
     steps:
       - name: Checkout repository
@@ -98,9 +98,9 @@ jobs:
         working-directory: ${{ matrix.working_directory }}
         run: |
           python -m pip install --upgrade pip
-          if [ "${{ matrix.package_name }}" = "django-geoaddress" ]; then
+          if [ "${{ matrix.package_name }}" = "django-organizationatlas" ]; then
             python -m pip install "Django==5.2.*"
-            python -m pip install -e ../python-geoaddress
+            python -m pip install -e ../python-organizationatlas
           fi
           python -m pip install build twine
           python -m build
