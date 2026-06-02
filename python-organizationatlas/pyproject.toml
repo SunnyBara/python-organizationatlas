@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python-organizationatlas"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+  {name = "Octolo", email = "dev@octolo.tech"}
+]
+dependencies = [
+  "clicommands>=0.1.0",
+  "providerkit",
+]
+
+[project.scripts]
+organizationatlas = "organizationatlas.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/hicinformatic/python-organizationatlas"
+Repository = "https://github.com/hicinformatic/python-organizationatlas"
+Documentation = "https://github.com/hicinformatic/python-organizationatlas/tree/main/python-organizationatlas#readme"
+Issues = "https://github.com/hicinformatic/python-organizationatlas/issues"
+
+[tool.setuptools]
+package-data = {organizationatlas = [".commands.json"]}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["tests*", "docs*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra --strict-markers"
+markers = [
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
+
