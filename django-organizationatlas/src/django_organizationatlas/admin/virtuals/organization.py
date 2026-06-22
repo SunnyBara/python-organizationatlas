@@ -18,7 +18,7 @@ BackendServiceAdminFilter.provider_model = OrganizationAtlasProviderModel
 @admin.register(OrganizationAtlasVirtualOrganization)
 class OrganizationAtlasVirtualOrganizationAdmin(ReadOnlyVirtualAdmin, AdminBoostModel):
     list_display = ["denomination", "reference", "address", "backend_name_display"]
-    search_fields = ["denomination"]
+    search_fields = ["denomination",]
     list_filter = [FirstServiceAdminFilter, BackendServiceAdminFilter]
     fieldsets = [
         (None, {"fields": ("denomination", "reference", "source_field", "address")}),
@@ -48,6 +48,9 @@ class OrganizationAtlasVirtualOrganizationAdmin(ReadOnlyVirtualAdmin, AdminBoost
                 kwargs["attribute_search"] = {"name": request.GET.get("bck")}
             return self.model.objects.search_organization(query=query, **kwargs)
         return self.model.objects.none()
+
+    def get_search_results(self, request, queryset, search_term):
+        return queryset, False
 
     def get_object(self, request, object_id, from_field=None):
         _ = from_field  # Unused parameter required by Django admin interface

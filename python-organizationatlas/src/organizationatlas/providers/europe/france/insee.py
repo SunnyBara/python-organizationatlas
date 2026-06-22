@@ -77,6 +77,8 @@ class InseeProvider(OrganizationAtlasFranceProvider):
     def search_organization(self, query: str, raw: bool = False, **kwargs: Any) -> list[dict[str, Any]]:
         if not query:
             return []
+        if self.is_siren(query) or self.is_siret(query) or self.is_rna(query):
+            return [self.search_organization_by_reference(query, by_pass=True)]
         query_clean = query.replace("+", " ").strip()
         return self._call_api(f'denominationUniteLegale:"{query_clean}"', endpoint="siret")
 

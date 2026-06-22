@@ -35,7 +35,7 @@ FRANCE_FIELDS_DESCRIPTIONS = {
 _CODE_PATTERNS: dict[str, tuple[str, int, bool]] = {
     "siret": (r"^\d{14}$", 14, False),
     "siren": (r"^\d{9}$", 9, False),
-    "rna":   (r"^W\d{8}$", 9, True),
+    "rna":   (r"^W|w\d{8}$", 9, True),
 }
 
 
