@@ -44,7 +44,7 @@ class OrganizationAtlasOrganizationAdmin(AdminBoostModel):
     headquarters_address_display.short_description = _("Headquarters Address")
 
     def handle_refresh_person(self, request, object_id):
-        print("ok")
+        pass
 
     @admin_boost_view("message", _("Search Organization"))
     def search_organization(self, request):
