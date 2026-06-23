@@ -129,10 +129,10 @@ multi-source storage with provenance.
 
 ### C. Choices/referentials → `OrganizationAtlasReferentiel` + CSV
 
-Convert every `choices/fr.py` group into a CSV loaded by `references --download`:
+Convert every `choices/fr.py` group into a CSV loaded by `referentiel --import`:
 
 ```
-references/download/
+referentiel/import/
 ├─ ape.csv
 ├─ legalform.csv
 ├─ slice_effective.csv
@@ -151,7 +151,7 @@ references/download/
 - `code` (e.g. `"1000"`, `"EURONEXT_GROWTH"`…)
 - `description` + `characteristics` + `usage_type`
 
-The `references --download` management command scans a folder and ingests every
+The `referentiel --import` management command scans a folder and ingests every
 `*.csv` it finds.
 
 ### D. Financial block → new `OrganizationAtlasFinancial` model
@@ -288,7 +288,7 @@ changes needed in `providerkit` or `django-providerkit`.
 |---|---|---|
 | 1 | Add `parent`, `is_type`, `since`, `site`, `resume` on `OrganizationAtlasOrganization` | 10 min |
 | 2 | Convert `choices/fr.py` (APE, LEGALFORM, SLICE_EFFECTIVE, …) to CSV in `data_sources/fr/` | ~1h (conversion script) |
-| 3 | Extend `references --download` to scan a folder | 20 min |
+| 3 | Extend `referentiel --import` to scan a folder | 20 min |
 | 4 | Enrich `create_organization()` to push all `raw` fields into `OrganizationAtlasData` | 30 min |
 | 5 | Create `OrganizationAtlasFinancial` (model + admin) | 1h |
 | 6 | Create `OrganizationAtlasGovernance` (OneToOne) | 30 min |

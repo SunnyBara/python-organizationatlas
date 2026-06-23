@@ -9,10 +9,10 @@ from django.utils.translation import gettext_lazy as _
 from django_boosted import AdminBoostModel
 from django_boosted.decorators import admin_boost_view
 
-from ..forms.references import ReferenceImportForm
+from ..forms.referentiel import ReferentielImportForm
 from ..models.referentiel import OrganizationAtlasReferentiel
 from ..models.source import ORGANIZATIONATLAS_FIELDS_SOURCE
-from ..services.references import import_reference_rows, read_csv_file
+from ..services.referentiel import import_referentiel_rows, read_csv_file
 
 base_fields = [
     "category",
@@ -56,17 +56,17 @@ class OrganizationAtlasReferentielAdmin(AdminBoostModel):
 
     @admin_boost_view(
         "form",
-        _("Import references"),
-        path_fragment="import-references",
+        _("Import referentiel"),
+        path_fragment="import-referentiel",
         requires_object=False,
         permission="change",
     )
-    def import_references(self, request):
+    def import_referentiel(self, request):
         if not self.has_change_permission(request):
-            messages.error(request, _("You do not have permission to import references."))
+            messages.error(request, _("You do not have permission to import referentiel data."))
             return redirect(self._get_changelist_url())
 
-        form = ReferenceImportForm(request.POST or None, request.FILES or None)
+        form = ReferentielImportForm(request.POST or None, request.FILES or None)
 
         if request.method == "POST" and form.is_valid():
             uploaded_file = form.cleaned_data["csv_file"]
@@ -74,7 +74,7 @@ class OrganizationAtlasReferentielAdmin(AdminBoostModel):
             try:
                 with TextIOWrapper(uploaded_file.file, encoding="utf-8") as text_file:
                     rows = read_csv_file(text_file)
-                created_count, updated_count = import_reference_rows(rows)
+                created_count, updated_count = import_referentiel_rows(rows)
             except UnicodeDecodeError:
                 messages.error(request, _("CSV file must be encoded in UTF-8."))
             except CommandError as error:
@@ -82,7 +82,7 @@ class OrganizationAtlasReferentielAdmin(AdminBoostModel):
             else:
                 messages.success(
                     request,
-                    _("Imported %(created)s created and %(updated)s updated references.")
+                    _("Imported %(created)s created and %(updated)s updated referentiel rows.")
                     % {"created": created_count, "updated": updated_count},
                 )
                 return redirect(self._get_changelist_url())

@@ -9,13 +9,13 @@ from django.test import TestCase
 from django.urls import reverse
 
 from django_organizationatlas.models import OrganizationAtlasReferentiel
-from django_organizationatlas.services.references import read_csv
+from django_organizationatlas.services.referentiel import read_csv
 
 
-class ReferencesCommandTests(TestCase):
+class ReferentielCommandTests(TestCase):
     def test_read_csv_supports_mixed_columns(self):
         with TemporaryDirectory() as tmp_dir:
-            csv_path = Path(tmp_dir) / "references.csv"
+            csv_path = Path(tmp_dir) / "referentiel.csv"
             csv_path.write_text(
                 "source;description;code;country_code;category\n"
                 "sample;Culture du riz;0112Z;FR;ape\n",
@@ -37,16 +37,16 @@ class ReferencesCommandTests(TestCase):
             ],
         )
 
-    def test_references_download_imports_rows(self):
+    def test_referentiel_import_imports_rows(self):
         with TemporaryDirectory() as tmp_dir:
-            csv_path = Path(tmp_dir) / "references.csv"
+            csv_path = Path(tmp_dir) / "referentiel.csv"
             csv_path.write_text(
                 "category;code;description;country_code;source\n"
                 "ape;0112Z;Culture du riz;FR;sample\n",
                 encoding="utf-8",
             )
 
-            call_command("references", "--download", str(csv_path))
+            call_command("referentiel", "--import", str(csv_path))
 
         reference = OrganizationAtlasReferentiel.objects.get()
         self.assertEqual(reference.category, "ape")
@@ -55,7 +55,7 @@ class ReferencesCommandTests(TestCase):
         self.assertEqual(reference.country_code, "FR")
         self.assertEqual(reference.source, "sample")
 
-    def test_references_download_updates_existing_reference(self):
+    def test_referentiel_import_updates_existing_reference(self):
         OrganizationAtlasReferentiel.objects.create(
             category="ape",
             code="0112Z",
@@ -65,14 +65,14 @@ class ReferencesCommandTests(TestCase):
         )
 
         with TemporaryDirectory() as tmp_dir:
-            csv_path = Path(tmp_dir) / "references.csv"
+            csv_path = Path(tmp_dir) / "referentiel.csv"
             csv_path.write_text(
                 "category;code;description;country_code;source\n"
                 "ape;0112Z;Culture du riz;FR;new-source\n",
                 encoding="utf-8",
             )
 
-            call_command("references", "--download", str(csv_path))
+            call_command("referentiel", "--import", str(csv_path))
 
         self.assertEqual(OrganizationAtlasReferentiel.objects.count(), 1)
         reference = OrganizationAtlasReferentiel.objects.get()
@@ -81,13 +81,13 @@ class ReferencesCommandTests(TestCase):
 
     def test_read_csv_requires_expected_columns(self):
         with TemporaryDirectory() as tmp_dir:
-            csv_path = Path(tmp_dir) / "references.csv"
+            csv_path = Path(tmp_dir) / "referentiel.csv"
             csv_path.write_text("code;description\n0112Z;Culture du riz\n", encoding="utf-8")
 
             with self.assertRaises(CommandError):
                 read_csv(csv_path)
 
-    def test_references_upload_exports_dump_csv(self):
+    def test_referentiel_export_exports_dump_csv(self):
         OrganizationAtlasReferentiel.objects.create(
             category="ape",
             code="0112Z",
@@ -97,9 +97,9 @@ class ReferencesCommandTests(TestCase):
         )
 
         with TemporaryDirectory() as tmp_dir:
-            dump_dir = Path(tmp_dir) / "references" / "upload"
+            dump_dir = Path(tmp_dir) / "referentiel" / "export"
 
-            call_command("references", "--upload", str(dump_dir))
+            call_command("referentiel", "--export", str(dump_dir))
 
             dump_path = dump_dir / "dump.csv"
 
@@ -110,7 +110,7 @@ class ReferencesCommandTests(TestCase):
                 "ape;0112Z;Culture du riz;FR;sample\n",
             )
 
-    def test_admin_import_references_uploads_csv(self):
+    def test_admin_import_referentiel_uploads_csv(self):
         user = get_user_model().objects.create_superuser(
             username="admin",
             email="admin@example.com",
@@ -119,12 +119,12 @@ class ReferencesCommandTests(TestCase):
         self.client.force_login(user)
 
         csv_file = SimpleUploadedFile(
-            "references.csv",
+            "referentiel.csv",
             b"category;code;description;country_code;source\n"
             b"ape;0112Z;Culture du riz;FR;sample\n",
             content_type="text/csv",
         )
-        url = reverse("admin:django_organizationatlas_organizationatlasreferentiel_import_references")
+        url = reverse("admin:django_organizationatlas_organizationatlasreferentiel_import_referentiel")
 
         response = self.client.post(url, {"csv_file": csv_file, "_import": "Import"})
 

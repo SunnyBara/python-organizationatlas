@@ -5,8 +5,8 @@ from django.core.management.base import CommandError
 
 from django_organizationatlas.models import OrganizationAtlasReferentiel as Referentiel
 
-REFERENCE_COLUMNS = ("category", "code", "description", "country_code", "source")
-REQUIRED_COLUMNS = set(REFERENCE_COLUMNS)
+REFERENTIEL_COLUMNS = ("category", "code", "description", "country_code", "source")
+REQUIRED_COLUMNS = set(REFERENTIEL_COLUMNS)
 DEFAULT_DUMP_FILENAME = "dump.csv"
 
 
@@ -76,7 +76,7 @@ def read_csv_file(csv_file):
     return rows
 
 
-def import_reference_rows(rows):
+def import_referentiel_rows(rows):
     created_count = 0
     updated_count = 0
 
@@ -99,7 +99,7 @@ def import_reference_rows(rows):
     return created_count, updated_count
 
 
-def import_references_from_path(path):
+def import_referentiel_from_path(path):
     total_created = 0
     total_updated = 0
     csv_paths = get_csv_paths(path)
@@ -108,30 +108,30 @@ def import_references_from_path(path):
         raise CommandError(f"No CSV files found in: {path}")
 
     for csv_path in csv_paths:
-        created_count, updated_count = import_reference_rows(read_csv(csv_path))
+        created_count, updated_count = import_referentiel_rows(read_csv(csv_path))
         total_created += created_count
         total_updated += updated_count
 
     return total_created, total_updated, len(csv_paths)
 
 
-def export_references_to_path(path):
+def export_referentiel_to_path(path):
     dump_path = get_dump_path(path)
-    references = Referentiel.objects.order_by("category", "country_code", "code")
+    referentiels = Referentiel.objects.order_by("category", "country_code", "code")
 
     with dump_path.open("w", encoding="utf-8", newline="") as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=REFERENCE_COLUMNS, delimiter=";")
+        writer = csv.DictWriter(csv_file, fieldnames=REFERENTIEL_COLUMNS, delimiter=";")
         writer.writeheader()
 
-        for reference in references:
+        for referentiel in referentiels:
             writer.writerow(
                 {
-                    "category": reference.category,
-                    "code": reference.code,
-                    "description": reference.description,
-                    "country_code": reference.country_code or "",
-                    "source": reference.source or "",
+                    "category": referentiel.category,
+                    "code": referentiel.code,
+                    "description": referentiel.description,
+                    "country_code": referentiel.country_code or "",
+                    "source": referentiel.source or "",
                 }
             )
 
-    return dump_path, references.count()
+    return dump_path, referentiels.count()
