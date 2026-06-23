@@ -2,6 +2,7 @@
 
 __version__ = "0.1.1"
 
+from .fields.france import FR_SEARCH_COMPANY_FIELDS
 
 def _f(label: str, fmt: str = "str") -> dict:
     return {"label": label, "description": label, "format": fmt}
@@ -26,6 +27,13 @@ ORGANIZATIONATLAS_SEARCH_COMPANY_FIELDS = {
     "backend": _f("Backend display name"),
     "backend_name": _f("Simple backend name (e.g., insee)"),
 }
+
+ORGANIZATIONATLAS_SEARCH_COMPANY_FIELDS.update(
+    {
+        key: _f(description)
+        for key, description in FR_SEARCH_COMPANY_FIELDS.items()
+    }
+)
 
 ORGANIZATIONATLAS_GET_COMPANY_DOCUMENTS_FIELDS = _list_response_fields("documents", "Documents")
 ORGANIZATIONATLAS_GET_COMPANY_EVENTS_FIELDS = _list_response_fields("events", "Events")
