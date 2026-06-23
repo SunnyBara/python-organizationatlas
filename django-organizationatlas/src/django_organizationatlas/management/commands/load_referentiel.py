@@ -78,16 +78,27 @@ class Command(BaseCommand):
         created_count = 0
         updated_count = 0
 
-        with open(csv_path, encoding="utf-8") as csvfile:
-            reader = csv.DictReader(csvfile)
+        with open(csv_path, encoding="utf-8", newline="") as csvfile:
+            sample = csvfile.read(2048)
+            csvfile.seek(0)
+            try:
+                dialect = csv.Sniffer().sniff(sample, delimiters=",;")
+            except csv.Error:
+                dialect = csv.excel
+            reader = csv.DictReader(csvfile, dialect=dialect)
 
             for row in reader:
                 if not row.get("code"):
                     continue
 
                 # Base fields
+                category = row.get("category", "")
+                country_code = row.get("country_code", "")
+                source = row.get("source", "")
                 data = {
-                    "category": row.get("category", ""),
+                    "category": category,
+                    "country_code": country_code,
+                    "source": source,
                     "description": row.get("description", ""),
                     "characteristics": row.get("characteristics", ""),
                     "priority": int(row.get("priority") or 0),
@@ -108,6 +119,8 @@ class Command(BaseCommand):
                     data["metadata"] = metadata
 
                 obj, created = Referentiel.objects.update_or_create(
+                    category=category,
+                    country_code=country_code,
                     code=row["code"],
                     defaults=data,
                 )
